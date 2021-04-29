@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
 
-import com.biyang.url_shortener.lib.UrlEncoder;
 import com.biyang.url_shortener.model.Url;
 import com.biyang.url_shortener.repository.UrlRepository;
 

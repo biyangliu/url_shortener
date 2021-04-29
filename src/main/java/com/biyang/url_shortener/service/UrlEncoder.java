@@ -1,4 +1,4 @@
-package com.biyang.url_shortener.lib;
+package com.biyang.url_shortener.service;
 
 import org.springframework.stereotype.Service;
 

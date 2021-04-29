@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.biyang.url_shortener.service.UrlEncoder;
+
 @RunWith(MockitoJUnitRunner.class)
 public class UrlEncoderTest {
 
