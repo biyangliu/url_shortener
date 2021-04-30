@@ -31,7 +31,7 @@ public class UrlEncoderTest {
     public void decode_singleCharacter() {
         assertEquals(11, urlEncoder.decode("l"));
     }
-    
+
     @Test
     public void decode_threeCharacter() {
         assertEquals(11, urlEncoder.decode("aal"));
