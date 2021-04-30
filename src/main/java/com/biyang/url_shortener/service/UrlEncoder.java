@@ -1,5 +1,6 @@
 package com.biyang.url_shortener.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UrlEncoder {
+	
 	private static final String BASE_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	private static final char[] BASE_CHARACTERS = {
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
@@ -17,17 +19,16 @@ public class UrlEncoder {
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 	};
     private static final int BASE_LENGTH = BASE_CHARACTERS.length;
+    
+	@Value("${shorturl.length}")
+	private int SHORTURL_LENGTH;
 
-    public String encode(long input){
+    public String encode(long input) {
         StringBuilder encodedString = new StringBuilder();
 
-        if (input == 0) {
-            return String.valueOf(BASE_CHARACTERS[0]);
-        }
-
-        while (input > 0) {
-            encodedString.append(BASE_CHARACTERS[(int) (input % BASE_LENGTH)]);
-            input = input / BASE_LENGTH;
+        for (int i = 0; i < SHORTURL_LENGTH; i++) {
+        	encodedString.append(BASE_CHARACTERS[(int) (input % BASE_LENGTH)]);
+        	input = input / BASE_LENGTH;
         }
 
         return encodedString.reverse().toString();

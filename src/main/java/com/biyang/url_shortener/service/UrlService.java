@@ -3,6 +3,7 @@ package com.biyang.url_shortener.service;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.biyang.url_shortener.model.Url;
@@ -13,13 +14,11 @@ public class UrlService {
 
 	private static AtomicLong urlIdGenerator = new AtomicLong();
 
-	private final UrlRepository urlRepository;
-	private final UrlEncoder urlEncoder;
-
-	public UrlService(UrlRepository urlRepository, UrlEncoder urlEncoder) {
-		this.urlRepository = urlRepository;
-		this.urlEncoder = urlEncoder;
-	}
+	@Autowired
+	private UrlRepository urlRepository;
+	
+	@Autowired
+	private UrlEncoder urlEncoder;
 
 	public String convertAndSaveUrl(String longUrl) {
 		long urlId = urlIdGenerator.getAndIncrement();
@@ -30,7 +29,7 @@ public class UrlService {
 		return shortUrl;
 	}
 
-	public String getOriginalUrl(String shortUrl) {
+	public String getOriginalUrl(String shortUrl) { 
 		long id = urlEncoder.decode(shortUrl);
 		Optional<Url> entity = urlRepository.findById(id);
 

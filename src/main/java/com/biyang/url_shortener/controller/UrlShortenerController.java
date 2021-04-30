@@ -2,8 +2,7 @@ package com.biyang.url_shortener.controller;
 
 import java.net.URI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +19,10 @@ import com.biyang.url_shortener.service.UrlService;
 @RequestMapping(value = "/")
 public class UrlShortenerController {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final UrlService urlService;
+	// private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public UrlShortenerController(UrlService urlService) {
-        this.urlService = urlService;
-    }
+	@Autowired
+	private UrlService urlService;
 
     @PostMapping("/")
     public String convertToShortUrl(@RequestBody String longUrl) {
@@ -36,7 +33,9 @@ public class UrlShortenerController {
     @Cacheable(value = "urls", key = "#shortUrl", sync = true)
     public ResponseEntity<Void> getAndRedirect(@PathVariable String shortUrl) {
         String url = urlService.getOriginalUrl(shortUrl);
-        if (url == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		if (url == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(url))
                 .build();
