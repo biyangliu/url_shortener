@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,7 +23,7 @@ import com.biyang.url_shortener.service.UrlService;
 @Controller
 public class UrlShortenerController {
 
-	// private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private UrlService urlService;
@@ -39,10 +41,12 @@ public class UrlShortenerController {
 
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	@ResponseBody
-	public String convertToShortUrl(@RequestParam("url") String longUrl) throws UnknownHostException {
+	public String create(@RequestParam("url") String longUrl) throws UnknownHostException {
+		logger.info("API Called: CREATE: {}", longUrl);
 		try {
 			new URL(longUrl).toURI();
 		} catch (Exception e) {
+			logger.info("Invalid URL {}", longUrl);
 			return "Invalid URL! " + e.getMessage();
 		}
 
@@ -53,17 +57,19 @@ public class UrlShortenerController {
 		sb.append(port);
 		sb.append("/get/");
 		sb.append(shortUrl);
+		logger.info("Short URL created: {}", sb.toString());
 		return sb.toString();
     }
 
 	@RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
     @Cacheable(value = "urls", key = "#shortUrl", sync = true)
-    public ResponseEntity<Void> getAndRedirect(@PathVariable String shortUrl) {
+	public ResponseEntity<Void> lookup(@PathVariable String shortUrl) {
+		logger.info("API Called: LOOKUP: {}", shortUrl);
 		if (shortUrl == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
         String url = urlService.getOriginalUrl(shortUrl);
-		System.out.format("Short URL: %s  Found URL: %s\n", shortUrl, url);
+		logger.info("Short URL: {}  Found URL: {}", shortUrl, url);
 		if (url == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
