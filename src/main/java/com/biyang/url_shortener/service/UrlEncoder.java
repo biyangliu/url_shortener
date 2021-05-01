@@ -42,12 +42,10 @@ public class UrlEncoder {
         char[] characters = input.toCharArray();
         int length = characters.length;
 
-        int decoded = 0;
-
-        //counter is used to avoid reversing input string
-        int counter = 1;
-        for (int i = 0; i < length; i++) {
-            decoded += BASE_STRING.indexOf(characters[i]) * Math.pow(BASE_LENGTH, length - counter);
+		long decoded = 0;
+		int counter = 0;
+		for (int i = length - 1; i >= 0; i--) {
+			decoded += BASE_STRING.indexOf(characters[i]) * Math.pow(BASE_LENGTH, counter);
             counter++;
         }
         return decoded;

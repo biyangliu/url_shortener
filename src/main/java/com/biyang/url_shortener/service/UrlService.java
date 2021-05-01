@@ -32,6 +32,7 @@ public class UrlService {
 
 	public String getOriginalUrl(String shortUrl) {
 		long id = urlEncoder.decode(shortUrl);
+		System.out.println("The decoded ID: " + id);
 		Optional<Url> entity = urlRepository.findById(id);
 
 		if (entity.isEmpty()) return null;
