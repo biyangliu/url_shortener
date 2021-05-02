@@ -18,10 +18,10 @@ public class Url {
 
 	/** Long URL. */
 	private String longUrl;
-	
+
 	/** Short URL. */
 	private String shortUrl;
-	
+
 	/** Created date. */
 	private Date created;
 
@@ -38,7 +38,7 @@ public class Url {
 	 */
 	@Override
 	public String toString() {
-		return String.format("URL: [id=%l, long=%s, short=%s, created=%s]", urlId, longUrl, shortUrl, created);
+		return String.format("URL: [id=%d, long=%s, short=%s, created=%s]", urlId, longUrl, shortUrl, created);
 	}
 
 	public long getUrlId() {

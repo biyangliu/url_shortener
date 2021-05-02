@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
- * Encode and decode the IDs of URLs. Do NOT apply directly on the URLs.
- * It uses a-z A-Z 0-9 as the base characters.
+ * Encode and decode the IDs of URLs. Do NOT apply directly on the URLs. It uses
+ * a-z, A-Z, 0-9 as the base characters.
  *
  * @author byliu
  */

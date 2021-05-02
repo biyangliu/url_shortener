@@ -2,10 +2,7 @@ package com.biyang.url_shortener.controller;
 
 import java.net.URI;
 import java.net.URL;
-import java.net.UnknownHostException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,21 +15,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.biyang.url_shortener.model.Url;
 import com.biyang.url_shortener.service.UrlService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class UrlShortenerController {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private UrlService urlService;
+	private String hostname;
+	private int port;
 
 	@Autowired
-	private UrlService urlService;
-
-	@Value("${server.hostname}")
-	private String hostname;
-
-	@Value("${server.port}")
-	private int port;
+	public UrlShortenerController(UrlService urlService, @Value("${server.hostname}") String hostname,
+			@Value("${server.port}") int port) {
+		this.urlService = urlService;
+		this.hostname = hostname;
+		this.port = port;
+	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index() {
@@ -41,35 +43,37 @@ public class UrlShortenerController {
 
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	@ResponseBody
-	public String create(@RequestParam("url") String longUrl) throws UnknownHostException {
-		logger.info("API Called: CREATE: {}", longUrl);
+	@Cacheable(value = "create-urls", key = "#longUrl", sync = true)
+	public String create(@RequestParam("url") String longUrl) {
+		log.info("API Called: CREATE: {}", longUrl);
 		try {
 			new URL(longUrl).toURI();
 		} catch (Exception e) {
-			logger.info("Invalid URL {}", longUrl);
+			log.info("Invalid URL {}", longUrl);
 			return "Invalid URL! " + e.getMessage();
 		}
 
-		String shortUrl = urlService.convertAndSaveUrl(longUrl);
+		Url shortUrl = urlService.convertAndSaveUrl(longUrl);
+		log.info("URL {} not found in history. So created a new short URL {}", longUrl, shortUrl.getShortUrl());
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(hostname);
 		sb.append(':');
 		sb.append(port);
 		sb.append("/get/");
-		sb.append(shortUrl);
-		logger.info("Short URL created: {}", sb.toString());
+		sb.append(shortUrl.getShortUrl());
 		return sb.toString();
     }
 
 	@RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
-    @Cacheable(value = "urls", key = "#shortUrl", sync = true)
+	@Cacheable(value = "lookup-urls", key = "#shortUrl", sync = true)
 	public ResponseEntity<Void> lookup(@PathVariable String shortUrl) {
-		logger.info("API Called: LOOKUP: {}", shortUrl);
+		log.info("API Called: LOOKUP: {}", shortUrl);
 		if (shortUrl == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
         String url = urlService.getOriginalUrl(shortUrl);
-		logger.info("Short URL: {}  Found URL: {}", shortUrl, url);
+		log.info("Short URL: {}  Found URL: {}", shortUrl, url);
 		if (url == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}

@@ -2,18 +2,17 @@ package com.biyang.url_shortener.service;
 
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.biyang.url_shortener.model.Url;
 import com.biyang.url_shortener.repository.UrlRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class UrlService {
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private UniqueIdGenerator idGenerator;
@@ -24,18 +23,18 @@ public class UrlService {
 	@Autowired
 	private UrlEncoder urlEncoder;
 
-	public String convertAndSaveUrl(String longUrl) {
+	public Url convertAndSaveUrl(String longUrl) {
 		long urlId = idGenerator.getUniqueId();
 		String shortUrl = urlEncoder.encode(urlId);
 		Url url = new Url(urlId, longUrl, shortUrl);
 		urlRepository.save(url);
 
-		return shortUrl;
+		return url;
 	}
 
 	public String getOriginalUrl(String shortUrl) {
 		long id = urlEncoder.decode(shortUrl);
-		logger.info("Decoded ID: {}", id);
+		log.info("Decoded ID: {}", id);
 		Optional<Url> entity = urlRepository.findById(id);
 
 		if (entity.isEmpty()) return null;
