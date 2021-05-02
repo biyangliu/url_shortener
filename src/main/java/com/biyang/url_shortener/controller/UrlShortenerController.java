@@ -23,59 +23,57 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class UrlShortenerController {
 
-	private UrlService urlService;
-	private String hostname;
-	private int port;
+    private UrlService urlService;
+    private String hostname;
+    private int port;
 
-	@Autowired
-	public UrlShortenerController(UrlService urlService, @Value("${server.hostname}") String hostname,
-			@Value("${server.port}") int port) {
-		this.urlService = urlService;
-		this.hostname = hostname;
-		this.port = port;
-	}
-
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index() {
-		return "index";
-	}
-
-	@RequestMapping(value = "/", method = RequestMethod.POST)
-	@ResponseBody
-	public String create(@RequestParam("url") String longUrl) {
-		log.info("API Called: CREATE: {}", longUrl);
-		try {
-			new URL(longUrl).toURI();
-		} catch (Exception e) {
-			log.info("Invalid URL {}", longUrl);
-			return "Invalid URL! " + e.getMessage();
-		}
-
-		Url shortUrl = urlService.convertAndSaveUrl(longUrl);
-		log.info("Long URL {} converted short URL {}", longUrl, shortUrl.getShortUrl());
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(hostname);
-		sb.append(':');
-		sb.append(port);
-		sb.append("/get/");
-		sb.append(shortUrl.getShortUrl());
-		return sb.toString();
+    @Autowired
+    public UrlShortenerController(UrlService urlService, @Value("${server.hostname}") String hostname,
+            @Value("${server.port}") int port) {
+        this.urlService = urlService;
+        this.hostname = hostname;
+        this.port = port;
     }
 
-	@RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
-	public ResponseEntity<Void> lookup(@PathVariable String shortUrl) {
-		log.info("API Called: LOOKUP: {}", shortUrl);
-		if (shortUrl == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index() {
+        return "index";
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @ResponseBody
+    public String create(@RequestParam("url") String longUrl) {
+        log.info("API Called: CREATE: {}", longUrl);
+        try {
+            new URL(longUrl).toURI();
+        } catch (Exception e) {
+            log.info("Invalid URL {}", longUrl);
+            return "Invalid URL! " + e.getMessage();
+        }
+
+        Url shortUrl = urlService.convertAndSaveUrl(longUrl);
+        log.info("Long URL {} converted short URL {}", longUrl, shortUrl.getShortUrl());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(hostname);
+        sb.append(':');
+        sb.append(port);
+        sb.append("/get/");
+        sb.append(shortUrl.getShortUrl());
+        return sb.toString();
+    }
+
+    @RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
+    public ResponseEntity<Void> lookup(@PathVariable String shortUrl) {
+        log.info("API Called: LOOKUP: {}", shortUrl);
+        if (shortUrl == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         String url = urlService.getOriginalUrl(shortUrl);
-		log.info("Short URL: {}  Found URL: {}", shortUrl, url);
-		if (url == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(url))
-                .build();
+        log.info("Short URL: {}  Found URL: {}", shortUrl, url);
+        if (url == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(url)).build();
     }
 }

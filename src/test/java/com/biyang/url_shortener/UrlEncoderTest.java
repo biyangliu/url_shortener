@@ -11,7 +11,7 @@ import com.biyang.url_shortener.service.UrlEncoder;
 @SpringBootTest
 public class UrlEncoderTest {
 
-	@Autowired
+    @Autowired
     private UrlEncoder urlEncoder;
 
     @Test
