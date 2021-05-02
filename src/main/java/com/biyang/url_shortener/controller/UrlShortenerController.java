@@ -5,7 +5,6 @@ import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -43,7 +42,6 @@ public class UrlShortenerController {
 
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	@ResponseBody
-	@Cacheable(value = "create-urls", key = "#longUrl", sync = true)
 	public String create(@RequestParam("url") String longUrl) {
 		log.info("API Called: CREATE: {}", longUrl);
 		try {
@@ -54,7 +52,7 @@ public class UrlShortenerController {
 		}
 
 		Url shortUrl = urlService.convertAndSaveUrl(longUrl);
-		log.info("URL {} not found in history. So created a new short URL {}", longUrl, shortUrl.getShortUrl());
+		log.info("Long URL {} converted short URL {}", longUrl, shortUrl.getShortUrl());
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(hostname);
@@ -66,7 +64,6 @@ public class UrlShortenerController {
     }
 
 	@RequestMapping(value = "/get/{shortUrl}", method = RequestMethod.GET)
-	@Cacheable(value = "lookup-urls", key = "#shortUrl", sync = true)
 	public ResponseEntity<Void> lookup(@PathVariable String shortUrl) {
 		log.info("API Called: LOOKUP: {}", shortUrl);
 		if (shortUrl == null) {

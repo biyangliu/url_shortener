@@ -3,6 +3,7 @@ package com.biyang.url_shortener.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.biyang.url_shortener.model.Url;
@@ -23,6 +24,7 @@ public class UrlService {
 	@Autowired
 	private UrlEncoder urlEncoder;
 
+	@Cacheable(value = "create-urls", key = "#longUrl", sync = true)
 	public Url convertAndSaveUrl(String longUrl) {
 		long urlId = idGenerator.getUniqueId();
 		String shortUrl = urlEncoder.encode(urlId);
@@ -32,6 +34,7 @@ public class UrlService {
 		return url;
 	}
 
+	@Cacheable(value = "lookup-urls", key = "#shortUrl", sync = true)
 	public String getOriginalUrl(String shortUrl) {
 		long id = urlEncoder.decode(shortUrl);
 		log.info("Decoded ID: {}", id);

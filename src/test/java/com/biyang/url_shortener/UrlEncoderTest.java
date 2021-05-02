@@ -1,16 +1,13 @@
 package com.biyang.url_shortener;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.biyang.url_shortener.service.UrlEncoder;
 
-@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class UrlEncoderTest {
 

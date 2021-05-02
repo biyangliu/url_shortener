@@ -1,5 +1,6 @@
 package com.biyang.url_shortener.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
@@ -10,7 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * @author byliu
  */
 @Document(collection = "urls")
-public class Url {
+public class Url implements Serializable {
+
+	private static final long serialVersionUID = -2834217891251633143L;
 
 	/** The ID for the URL. */
 	@Id

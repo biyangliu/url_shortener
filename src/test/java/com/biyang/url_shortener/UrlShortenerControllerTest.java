@@ -3,10 +3,8 @@ package com.biyang.url_shortener;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +15,6 @@ import com.biyang.url_shortener.controller.UrlShortenerController;
 import com.biyang.url_shortener.model.Url;
 import com.biyang.url_shortener.service.UrlService;
 
-@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class UrlShortenerControllerTest {
 
