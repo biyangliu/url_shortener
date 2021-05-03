@@ -35,7 +35,8 @@ $ docker-compose up
 + The Snowflake ID: total 48 bits = 31 bits timestamp + 5 bits server id + 12 bits sequence integer (can be further adjusted).
 + When running the application in parallel, different threads use AtomicLong sequence number to avoid concurrency problems.
 + Then this generated ID will be converted into 8 characters of 62-base.
-+ Comparing to other approaches, Snowflake ID generation does NOT have a dependency on database or Redis or ZooKeeper. So the availability is maximized.
++ Comparing to other "Unique ID" approaches, Snowflake ID generation does NOT have a dependency on database or Redis or ZooKeeper. So the availability is maximized.
++ Comparing to MD5/SHA1/HashCode approaches, do NOT have to look for existing database entries to avoid possible collision. 
 + 31 bits of timestamp with base unit of .1s will last about 3.4 years, which is good for a short URL service.
 + 5 bits server ID and 12 bits sequence number will allow more than 1.3M URLs generated in one second, good for handling extreme cases.
 + Redis is introduced for both CREATE and LOOKUP calls, so that the same long URLs will generate the same result, and greatly reduce database loads.
@@ -44,6 +45,7 @@ $ docker-compose up
 # Things to Do
 + Support variable short URL length.
 + Batch the database writes, and reduce the dependency on database.
-+ Add ElasticSearch/Kibana or Grafana to access pattern analysis, for further optimization
++ Add ElasticSearch/Kibana or Grafana for traffic pattern analysis, sum of each page visits, and more. 
 + To scale out, set up Redis Cluster with replicas and MongoDB Cluster with auto-sharding and auto-replication, as well as adding more web servers.
 + Add more tests to improve code coverage.
++ Add mechanism to evict expired URL entries. 
